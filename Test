@@ -1,0 +1,87 @@
+package zipfLaw;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+
+public class Test {
+
+	public static void main(String[] args) throws IOException {
+
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(new File("tamil.txt")));
+		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File("tamil1.txt")));
+
+		TamilTokenizer tamilTokenizer = new TamilTokenizer();
+		LinkedList<String> tokenized = null;
+		String line="பி . ப . 6.30 மணிக்கு 7 ( 5 ) ஆம் இலக்க நிலையியற் கட்டளை தொழிற்படுமாக .";
+		String[] parts = null ;
+		ArrayList<String> words=new ArrayList<String>();
+		// System.out.println(tamilTokenizer.splitSentences(line));
+		int j=1;
+	//	while( (line= bufferedReader.readLine())!= null) {
+		while(j>0)
+			j=j-1;
+			line.trim();
+			tokenized = tamilTokenizer.splitWords(line);
+
+			String str = "";
+			for (String term : tokenized) {
+				str = str + term + " ";
+			//	System.out.println(term);
+				
+			}
+			 System.out.println(str);
+			if (str != null)
+				str = str.trim();
+
+			parts= str.split("\\s+");
+			
+	            String lineToWrite = "";
+
+	            for (int i = 0; i < parts.length; i++) {
+	                if (i == parts.length - 1) {
+	                  
+	                    break;
+	                }
+
+	                if (parts[i].equalsIgnoreCase("/") || parts[i].equalsIgnoreCase(".")) {
+	                    if (i > 0 && isNumeric(parts[i - 1])) {
+	                        lineToWrite = lineToWrite.trim();
+	                        words.add(parts[i]);
+	                       // if (i < parts.length - 1 && isNumeric(parts[i + 1]))
+	                         //  System.out.println( parts[i]);
+	                       // words.add(parts[i]);
+	                       // else
+	                        //	 words.add(parts[i]);
+	                        	//System.out.println(  parts[i] + " ");
+	                    } else {
+	                    	//System.out.println(  parts[i] + " ");
+	                    	 words.add(parts[i]);
+	                    }
+	                } else {
+	                	//System.out.println(  parts[i] + " ");
+	                	 words.add(parts[i]);
+	                }
+	             //   System.out.println(tokenized.size());
+	        		//System.out.println(parts.length);
+	                System.out.println( parts[i]);
+	        		
+		}
+	            System.out.println(words.size());
+	}
+		 private static boolean isNumeric(String str) {
+		        try {
+		            Integer integer = Integer.parseInt(str);
+		            return true;
+		        } catch (NumberFormatException exception) {
+		            return false;
+		        }
+		    }
+		 
+		 
+}
