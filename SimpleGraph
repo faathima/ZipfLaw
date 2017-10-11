@@ -1,0 +1,74 @@
+package zipfLaw;
+import java.awt.*;
+import javax.swing.*;
+public class SimpleGraph extends JFrame {
+    //private final int WIDTH = 500;
+    //private final int HEIGHT = 1000;
+    private Container drawable;
+    private JPanel canvas;
+    public SimpleGraph(Integer[] someData) {
+    	
+        super("rank vs frequency graph");
+        drawable = getContentPane();
+        canvas = new GraphCanvas(someData);
+        drawable.add(canvas).getParent().getSize();
+       // setSize(WIDTH, HEIGHT);
+      
+    }
+    public class GraphCanvas extends JPanel {
+        private Integer[] data;
+        private int points;
+        private Integer[] XData;
+        private Integer[] YData;
+        public GraphCanvas(Integer[] someData) {
+            super();
+            data = someData;
+            points = data.length / 2;
+            XData = new Integer[points];
+            YData = new Integer[points];
+     
+            for(int i = 0; i < points; i++) {
+                XData[i] = data[i * 2];
+                YData[i] = data[i * 2 + 1];
+                System.out.println(XData[i]+" ,"+YData[i]+"\t");
+            }
+            
+        }
+        public void paint(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            for(int i = 0; i < points - 1; i++) {
+                int x0 = (int) (XData[i] );
+                int x1 = (int) (XData[i + 1] );
+                int y0 = (int) (YData[i] );
+                int y1 = (int) (YData[i + 1] );
+                g2.setColor(Color.BLUE); 
+                g2.drawLine(x0, y0, x1, y1);
+                
+             //   System.out.print(x0+ " "+y0+" "+ x1+" "+ y1+"\t");
+                if (i == 0)
+                  g2.drawString(("" + x0 + ", " + y0), x0 - 20, y0 + 10);
+                if (i == points - 2)
+                  g2.drawString(("" + x1 + ", " + y1), x1, y1);
+            }
+            g2.setColor(Color.GREEN);
+            g2.setStroke(new BasicStroke(2f));
+            g2.drawLine(XData[0], YData[0], XData[XData.length-1],YData[XData.length-1]);
+          
+        }
+       
+    }
+    public static void main(String[] args) {
+        Integer[] d = { 30, 150,
+                       33, 145,
+                       36, 162,
+                       39, 128,
+                       48, 114,
+                       70, 240,
+                       81, 400,
+                      130, 450,
+                      230,  85,
+                      255,  30 };
+        Frame f = new SimpleGraph(d);
+        f.show();
+    }
+}
