@@ -1,0 +1,88 @@
+package zipfLaw;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.TreeMap;
+//import org.apache.commons.collections.MultiHashMap;
+//import org.apache.commons.collections.MultiMap;
+//import org.apache.commons.collections.map.HashedMap;
+
+public class ZipfLaw {
+
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+		ZipfLaw z = new ZipfLaw();
+		File f = new File("tamil.txt");
+		ArrayList<String> words = new ArrayList<String>();
+		Map<String, Integer> wordCounts = new TreeMap<String, Integer>();
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("tamil.txt"), "UTF-8"));
+
+		try {
+			Reader reader = new InputStreamReader(new FileInputStream("tamil.txt"), "UTF-8");
+			BufferedReader fin = new BufferedReader(reader);
+			Writer writer = new OutputStreamWriter(new FileOutputStream("tamil1.txt"), "UTF-8");
+			BufferedWriter fout = new BufferedWriter(writer);
+			String s;
+			while ((s = fin.readLine()) != null) {
+
+				// get cutoff and report frequencies
+				//System.out.println("Total words = " + wordCounts.size());
+
+				String[] splited = s.split("\\s+");
+
+				for (String part : splited) {
+					// System.out.println(part);
+					if(! (part.equalsIgnoreCase("/") || part.equalsIgnoreCase("."))) {
+						words.add(part);
+						if (!wordCounts.containsKey(part)) {
+							wordCounts.put(part, 1);
+						} else {
+							wordCounts.put(part, wordCounts.get(part) + 1);
+						}
+					}
+				}
+
+				System.out.println(s);
+				fout.write(s);
+				fout.newLine();
+
+			}
+			// int min = console.nextInt();
+			for (String word : wordCounts.keySet()) {
+				int count = wordCounts.get(word);
+				// if (count >= min)
+				System.out.println(count + "\t" + word);
+			}
+
+			// Remember to call close.
+			// calling close on a BufferedReader/BufferedWriter
+			// will automatically call close on its underlying stream
+			fin.close();
+			fout.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
+		for (Integer c : wordCounts.values()) {
+			int value = counts.get(c) == null ? 0 : counts.get(c);
+			counts.put(c, value + 1);
+		}
+		for(int c:counts.keySet()) {
+		System.out.println(c +" ---"+counts.get(c));}
+
+		System.out.print(words.size());
+	}
+
+}
