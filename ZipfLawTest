@@ -1,0 +1,136 @@
+package zipfLaw;
+
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+
+public class ZipfLawTest{
+
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(new File("tamil.txt")));
+		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File("tamilFr.txt")));
+		BufferedWriter bufferedWriter1 = new BufferedWriter(new FileWriter(new File("tamilFrFR.txt")));
+		TamilTokenizer tamilTokenizer = new TamilTokenizer();
+
+		LinkedList<String> tokenized = null;
+		String line ;//="பி . ப . 6.30 மணிக்கு 7 ( 5 ) ஆம் இலக்க நிலையியற் கட்டளை தொழிற்படுமாக .";
+		String[] splited = null;
+		ArrayList<String> words = new ArrayList<String>();
+		ArrayList<String> wordsT = new ArrayList<String>();
+		//Map<String, Integer> wordCounts = new TreeMap<String, Integer>();
+		  String lineToWrite = "";
+
+		// while ((line = bufferedReader.readLine()) != null) {
+		 int j=1;
+		while ((line = bufferedReader.readLine()) != null) {
+		//	 while(j>0) {
+		//	j=j-1;
+			line.trim();
+			tokenized = tamilTokenizer.splitWords(line);
+
+			splited = line.split("\\s+");
+
+			// for (String part : splited) {
+			for (int i = 0; i < splited.length; i++) {
+				if (splited[i].equalsIgnoreCase("/") || splited[i].equalsIgnoreCase(".")) {
+					if (i > 0 && isNumeric(splited[i - 1])) {
+						wordsT.add(splited[i]);
+						// wordCounts= frequncyCounter(splited[i]);
+						// System.out.println("added" + "\t" + splited[i]);
+						//
+//						 if (!wordCounts.containsKey(splited[i])) {
+//						 wordCounts.put(splited[i], 1);
+//						 } else {
+//						 wordCounts.put(splited[i], wordCounts.get(splited[i]) + 1);
+//						 }
+					}
+					// wordsT.add(splited[i]);
+
+				} else {
+					wordsT.add(splited[i]);
+					// wordCounts=frequncyCounter(splited[i]);
+					// System.out.println("added" + "\t" + splited[i]);
+
+//					 if (!wordCounts.containsKey(splited[i])) {
+//					 wordCounts.put(splited[i], 1);
+//					 } else {
+//					 wordCounts.put(splited[i], wordCounts.get(splited[i]) + 1);
+//					 }
+				}
+			//	System.out.println(splited[i]);
+			}
+			
+
+		}
+		Map<String, Integer>  wordCounts=  frequncyCounter(wordsT);
+//		for (String word : wordCounts.keySet()) {
+//			int count = wordCounts.get(word);
+//		System.out.print(word + "-" + count+"\n");
+//			lineToWrite += word += "-"+ count +"\t ";
+//		   
+//		}
+		printMap(wordCounts);
+		 bufferedWriter.write(lineToWrite );
+		Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
+		for (Integer c : wordCounts.values()) {
+			int value = counts.get(c) == null ? 0 : counts.get(c);
+			counts.put(c, value + 1);
+		}
+		for (int c : counts.keySet()) {
+			System.out.println(c + " ---" + counts.get(c));
+		}
+		
+
+		System.out.println(words.size());
+		System.out.println(wordsT.size());
+		
+	    bufferedReader.close();
+        bufferedWriter.close();
+	}
+
+	private static boolean isNumeric(String str) {
+		try {
+			Integer integer = Integer.parseInt(str);
+			return true;
+		} catch (NumberFormatException exception) {
+			return false;
+		}
+	}
+
+	private static Map<String, Integer> frequncyCounter(ArrayList<String> words) {
+		Map<String, Integer> wordCounts = new HashMap<String, Integer>();
+		System.out.println(words.size());
+	
+		for (String word : words) {
+			if (!wordCounts.containsKey(word)) {
+				wordCounts.put(word, 1);
+			} else {
+				wordCounts.put(word, wordCounts.get(word)+1);
+			}
+		}
+		return wordCounts;
+	}
+	
+	 public static void printMap(Map<String, Integer> map)
+	    {
+	        for (Entry<String, Integer> entry : map.entrySet())
+	        {
+	            System.out.println( entry.getKey() + " - "+ entry.getValue());
+	        }
+	    }
+
+}
+
+
+
