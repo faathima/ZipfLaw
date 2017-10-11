@@ -1,0 +1,165 @@
+package zipfLaw;
+
+import java.awt.Frame;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+public class ZipFLawTester {
+	public static boolean ASC = true;
+	public static boolean DESC = false;
+
+	public static void main(String[] args) throws FileNotFoundException, IOException {
+
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(new File("sinhala.txt")));
+		//BufferedReader bufferedReader = new BufferedReader(new FileReader(new File("tamil.txt")));
+		TamilTokenizer tamilTokenizer = new TamilTokenizer();
+
+		LinkedList<String> tokenized = null;
+		String line; // ="பி . ப . 6.30 மணிக்கு 7 ( 5 ) ஆம் இலக்க நிலையியற் கட்டளை தொழிற்படுமாக .";
+		String[] splited = null;
+		ArrayList<String> words = new ArrayList<String>();
+		ArrayList<Integer> rank = new ArrayList<Integer>();
+		ArrayList<Integer> frq = new ArrayList<Integer>();
+
+		while ((line = bufferedReader.readLine()) != null) {
+			line.trim();
+			tokenized = tamilTokenizer.splitWords(line);
+			splited = line.split("\\s+");
+
+			for (int i = 0; i < splited.length; i++) {
+				if (splited[i].equalsIgnoreCase("/") || splited[i].equalsIgnoreCase(".")) {
+					if (i > 0 && isNumeric(splited[i - 1])) {
+						words.add(splited[i]);
+					}
+				} else if (splited[i].equalsIgnoreCase(",") || splited[i].equalsIgnoreCase("-")
+						|| splited[i].equalsIgnoreCase(")") || splited[i].equalsIgnoreCase("(")
+						|| splited[i].equalsIgnoreCase(";") || splited[i].equalsIgnoreCase(":")
+						|| splited[i].equalsIgnoreCase("?") || splited[i].equalsIgnoreCase("\u2013")
+						|| splited[i].equalsIgnoreCase("&") || splited[i].equalsIgnoreCase("%")
+						|| splited[i].equalsIgnoreCase("'") || splited[i].equalsIgnoreCase("*")
+						|| splited[i].equalsIgnoreCase("”") || splited[i].equalsIgnoreCase("+")
+						|| splited[i].equalsIgnoreCase("“") || splited[i].equalsIgnoreCase("/")) {
+
+				} else {
+					words.add(splited[i]);
+
+				}
+			}
+		}
+
+		System.out.println("Word Frequency");
+		Map<String, Integer> wordCounts = frequncyCounter(words);
+		printMap(wordCounts);
+
+		Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
+		for (Integer c : wordCounts.values()) {
+			int value = counts.get(c) == null ? 0 : counts.get(c);
+			counts.put(c, value + 1);
+		}
+
+		System.out.println("frequency of frequencies ");
+		printMapCount(counts);
+
+		System.out.println("Words Rank");
+		Map<String, Integer> sortedMapDesc = sortByComparator(wordCounts, DESC);
+		// printMap(sortedMapDesc);
+
+		int j = 1;
+		int privious = 1;
+
+		for (Entry<String, Integer> entry : sortedMapDesc.entrySet()) {
+			rank.add(j);
+			System.out.println(entry.getKey() + " - " + entry.getValue() + " - " + j);
+			if (!(privious == entry.getValue())) {
+				j += 1;
+			}
+			frq.add(entry.getValue());
+			privious = entry.getValue();
+		}
+
+		Integer[] graphData = new Integer[2 * frq.size()];
+		int b = 0;
+		for (int a = 0; a < frq.size(); a++) {
+			graphData[b] = rank.get(a);
+			b = b + 1;
+			graphData[b] = frq.get(a);
+			b = b + 1;
+
+		}
+		Frame f1 = new SimpleGraph(graphData);
+		f1.show();
+		bufferedReader.close();
+
+	}
+
+	private static boolean isNumeric(String str) {
+		try {
+			Integer integer = Integer.parseInt(str);
+			return true;
+		} catch (NumberFormatException exception) {
+			return false;
+		}
+	}
+
+	public static Map<String, Integer> frequncyCounter(ArrayList<String> words) {
+		Map<String, Integer> wordCounts = new HashMap<String, Integer>();
+		for (String word : words) {
+			if (!wordCounts.containsKey(word)) {
+				wordCounts.put(word, 1);
+			} else {
+				wordCounts.put(word, wordCounts.get(word) + 1);
+			}
+		}
+		return wordCounts;
+	}
+
+	public static void printMap(Map<String, Integer> map) {
+		for (Entry<String, Integer> entry : map.entrySet()) {
+			System.out.println(entry.getKey() + " - " + entry.getValue());
+		}
+	}
+
+	public static void printMapCount(Map<Integer, Integer> map) {
+		for (Entry<Integer, Integer> entry : map.entrySet()) {
+			System.out.println(entry.getKey() + " - " + entry.getValue());
+		}
+	}
+
+	private static Map<String, Integer> sortByComparator(Map<String, Integer> unsortMap, final boolean order) {
+
+		List<Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(unsortMap.entrySet());
+
+		// Sorting the list based on values
+		Collections.sort(list, new Comparator<Entry<String, Integer>>() {
+			public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+				if (order) {
+					return o1.getValue().compareTo(o2.getValue());
+				} else {
+					return o2.getValue().compareTo(o1.getValue());
+
+				}
+			}
+		});
+
+		// Maintaining insertion order with the help of LinkedList
+		Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
+		for (Entry<String, Integer> entry : list) {
+			sortedMap.put(entry.getKey(), entry.getValue());
+		}
+
+		return sortedMap;
+	}
+
+}
